@@ -1,0 +1,16 @@
+language: en-US
+reviews:
+  profile: chill
+  auto_review:
+    enabled: true
+    base_branches: [main]
+  path_filters:
+    - "!**/package-lock.json"
+    - "!**/playwright-report/**"
+  path_instructions:
+    - path: "tests/**"
+      instructions: "Flag flaky waits, hard-coded test data and missing assertions; prefer data-testid selectors and Faker data."
+    - path: "server/**"
+      instructions: "Check every request body is validated with Zod and errors return clear status codes."
+    - path: "client/**"
+      instructions: "Explain React issues simply; the author is learning React."
