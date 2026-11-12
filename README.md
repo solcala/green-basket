@@ -11,10 +11,11 @@ A shared, responsive grocery list where family members add, check off and plan i
 ## Stack
 
 - **Frontend:** Vite + React + TypeScript + Tailwind CSS (responsive web app)
-- **API:** Express + TypeScript, Zod validation, SQLite
+- **API:** Express + TypeScript, Zod validation, SQLite (local dev and tests)
 - **Tests:** Playwright API and E2E tests, with Zod schema checks and Faker data
 - **CI:** GitHub Actions; both suites run on every push, and the Playwright HTML report is uploaded as an artifact
 - **Hosting (free to start):** frontend on Vercel, API on Render's free plan (exact URLs once deployed)
+- **Storage:** Render's free plan wipes local files on restart and redeploy, so the deployed API uses [Turso](https://turso.tech) (hosted, SQLite-compatible, free tier) instead of a local SQLite file.
 
 ## Roadmap
 
@@ -63,7 +64,7 @@ Exact scripts are TBD.
 
 ## Testing strategy
 
-- **Why this stack:** API and UI tests share the same Zod contracts the server uses, so a change in request or response shape fails in CI the same way a typed client would. Playwright covers both layers, so one runner, one report and one CI job cover API and E2E.
+- **Why this stack:** API and UI tests validate request and response bodies against the same Zod contracts the server uses, so a change that leaves a schema out of date fails in CI. This proves schema conformance, not compatibility with an independent client. Playwright covers both layers, so one runner, one report and one CI job cover API and E2E.
 - **API tests** hit the real Express server and an isolated SQLite database. Request and response bodies are checked against the same Zod schemas the API uses. Faker generates names, quantities and recipe data so tests are not tied to a fixed fixture set.
 - **E2E tests** use Playwright page objects and `data-testid` selectors. A core scenario is two family members (via the member picker) editing the same list: add, check off, and verify updates after a refresh (no realtime/WebSockets in Phase 1).
 - **CI** runs both suites on GitHub Actions and uploads the Playwright HTML report as an artifact. External services added in later phases (TheMealDB, an LLM, OCR) are mocked so the pipeline stays deterministic.
