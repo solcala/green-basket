@@ -2,6 +2,8 @@
 
 A shared family grocery list you can actually use — and a small, testable portfolio app that shows off TypeScript, React, API testing and CI.
 
+> **Status:** Planning / Day 1 scaffolding next. The folders and run commands below are the target layout; they are not in the repo yet.
+
 ## Goal
 
 A shared, responsive grocery list where family members add, check off and plan items, and can turn recipes into shopping lists.
@@ -12,7 +14,7 @@ A shared, responsive grocery list where family members add, check off and plan i
 - **API:** Express + TypeScript, Zod validation, SQLite
 - **Tests:** Playwright API and E2E tests, with Zod schema checks and Faker data
 - **CI:** GitHub Actions; both suites run on every push, and the Playwright HTML report is uploaded as an artifact
-- **Hosting (free to start):** frontend on a Vercel subdomain (`green-basket.vercel.app`), API on Render's free plan
+- **Hosting (free to start):** frontend on Vercel, API on Render's free plan (exact URLs once deployed)
 
 ## Roadmap
 
@@ -48,27 +50,20 @@ Planning lives in the repo: this README, GitHub Issues + a Projects board, and n
 
 ## How to run
 
-> Placeholders — fill in once Day 1 scaffolding lands.
+Scaffolding is not in the repo yet. After Day 1, expect roughly:
 
 ```bash
-# Install (from the repo root)
-npm install
-
-# API (http://localhost:3000 — confirm port in server/)
-cd server && npm run dev
-
-# Frontend (http://localhost:5173 — confirm port in client/)
-cd client && npm run dev
-
-# API tests
-npx playwright test tests/api
-
-# E2E tests
-npx playwright test tests/e2e
+cd server && npm install && npm run dev
+cd client && npm install && npm run dev
+npx playwright test tests/api   # from the repo root
+npx playwright test tests/e2e   # from the repo root
 ```
+
+Exact scripts are TBD.
 
 ## Testing strategy
 
+- **Why this stack:** API and UI tests share the same Zod contracts the server uses, so a change in request or response shape fails in CI the same way a typed client would. Playwright covers both layers, so one runner, one report and one CI job cover API and E2E.
 - **API tests** hit the real Express server and an isolated SQLite database. Request and response bodies are checked against the same Zod schemas the API uses. Faker generates names, quantities and recipe data so tests are not tied to a fixed fixture set.
-- **E2E tests** drive the UI with Playwright page objects and `data-testid` selectors. A core scenario is two family members editing the same list (add, check off, see each other's changes).
+- **E2E tests** use Playwright page objects and `data-testid` selectors. A core scenario is two family members (via the member picker) editing the same list: add, check off, and verify updates after a refresh (no realtime/WebSockets in Phase 1).
 - **CI** runs both suites on GitHub Actions and uploads the Playwright HTML report as an artifact. External services added in later phases (TheMealDB, an LLM, OCR) are mocked so the pipeline stays deterministic.
